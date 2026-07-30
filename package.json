@@ -1,0 +1,13 @@
+{
+  "name": "projectpilot-ai",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "concurrently \"npm --workspace @projectpilot/api run dev\" \"npm --workspace @projectpilot/web run dev\"",
+    "build": "npm --workspace @projectpilot/api run build && npm --workspace @projectpilot/web run build",
+    "test": "npm --workspace @projectpilot/api run test",
+    "lint": "npm --workspace @projectpilot/api run lint && npm --workspace @projectpilot/web run lint"
+  },
+  "devDependencies": { "concurrently": "^9.1.2" }
+}

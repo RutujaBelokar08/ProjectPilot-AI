@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: projectpilot
+      POSTGRES_PASSWORD: projectpilot
+      POSTGRES_DB: projectpilot
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    ports: ["5432:5432"]
+  api:
+    build: ./apps/api
+    environment:
+      PORT: 4000
+      CLIENT_ORIGIN: http://localhost:5173
+      JWT_SECRET: change-me-in-production
+      JWT_REFRESH_SECRET: change-me-too-in-production
+      DATABASE_URL: postgresql://projectpilot:projectpilot@db:5432/projectpilot
+    ports: ["4000:4000"]
+    depends_on: [db]
+  web:
+    build: ./apps/web
+    ports: ["5173:80"]
+    depends_on: [api]
+volumes:
+  postgres_data:
