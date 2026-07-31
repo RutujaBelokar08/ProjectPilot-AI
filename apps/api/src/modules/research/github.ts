@@ -54,7 +54,12 @@ export async function searchGitHubRepositories(query: string, limit = 8): Promis
   };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 
-  const response = await fetch(url, { headers, signal: AbortSignal.timeout(10_000) });
+  let response: Response;
+  try {
+    response = await fetch(url, { headers, signal: AbortSignal.timeout(10_000) });
+  } catch {
+    throw new GitHubSearchError('Unable to connect to GitHub. Check this server\'s internet connection and try again.', 502);
+  }
   if (!response.ok) {
     const body = await response.text();
     const detail = body ? ` GitHub responded: ${body.slice(0, 180)}` : '';
