@@ -48,10 +48,14 @@ export async function searchResearchPapers(query: string, limit = 8): Promise<Pa
   const url = new URL('https://api.crossref.org/works');
   url.searchParams.set('query', query);
   url.searchParams.set('rows', String(Math.min(Math.max(limit, 1), 10)));
-  url.searchParams.set('select', 'DOI,title,abstract,URL,author,published,published-online,published-print,is-referenced-by-count,link');
   if (process.env.CROSSREF_MAILTO) url.searchParams.set('mailto', process.env.CROSSREF_MAILTO);
 
-  const response = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': 'ProjectPilot-AI/1.0' }, signal: AbortSignal.timeout(10_000) });
+  let response: Response;
+  try {
+    response = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': 'ProjectPilot-AI/1.0' }, signal: AbortSignal.timeout(10_000) });
+  } catch {
+    throw new PaperSearchError('Unable to connect to Crossref. Check this server\'s internet connection and try again.', 502);
+  }
   if (!response.ok) throw new PaperSearchError(response.status === 429 ? 'Research paper search is temporarily rate-limited. Please try again shortly.' : 'Research paper search is temporarily unavailable. Please try again shortly.', response.status === 429 ? 429 : 502);
 
   const payload = crossrefResponseSchema.parse(await response.json());

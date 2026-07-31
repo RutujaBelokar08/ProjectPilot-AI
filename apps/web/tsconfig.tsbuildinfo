@@ -1,1 +1,1 @@
-{"root":["./src/auth.tsx","./src/main.tsx"],"version":"5.9.3"}
+{"root":["./src/auth.tsx","./src/crossref.ts","./src/main.tsx"],"version":"5.9.3"}
